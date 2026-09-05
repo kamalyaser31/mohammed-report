@@ -2,32 +2,30 @@
  * منظومة إدارة مسودات الحلقات المتعددة (Multi-Session Drafts)
  */
 function initDrafts() {
-    const saved = localStorage.getItem('sana_drafts');
+    const saved = localStorage.getItem(STORAGE_KEYS.DRAFTS);
     if (saved) {
         try {
             drafts = JSON.parse(saved);
         } catch (e) {
-            console.warn('sana_drafts corrupted, resetting:', e);
+            console.warn('mohammed_drafts corrupted, resetting:', e);
             drafts = [];
         }
     }
 
-    // ترحيل البيانات السابقة إن وجدت أو إنشاء المسودة 1 افتراضياً
+    // إنشاء المسودة 1 الافتراضية المستقلة عند البدء الأول
     if (!drafts || !Array.isArray(drafts) || drafts.length === 0) {
-        const legacyData = JSON.parse(localStorage.getItem('sana_data') || '[]');
-        const legacySettings = JSON.parse(localStorage.getItem('sana_settings') || '{}');
         drafts = [
             {
                 id: 'draft_' + Date.now(),
                 name: 'المسودة 1',
-                halaNum: legacySettings.halaNum || '',
-                students: legacyData
+                halaNum: '',
+                students: []
             }
         ];
-        localStorage.setItem('sana_drafts', JSON.stringify(drafts));
+        localStorage.setItem(STORAGE_KEYS.DRAFTS, JSON.stringify(drafts));
     }
 
-    const savedActiveId = localStorage.getItem('sana_active_draft_id');
+    const savedActiveId = localStorage.getItem(STORAGE_KEYS.ACTIVE_DRAFT);
     const existing = drafts.find(d => d.id === savedActiveId);
     const activeDraft = existing || drafts[0];
 
@@ -83,7 +81,7 @@ function onDraftChange(newId) {
     syncCurrentDraft();
 
     activeDraftId = newId;
-    localStorage.setItem('sana_active_draft_id', activeDraftId);
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_DRAFT, activeDraftId);
 
     const nextDraft = getActiveDraft();
     students = nextDraft.students || [];
@@ -94,8 +92,8 @@ function onDraftChange(newId) {
         halaNumEl.value = nextDraft.halaNum || '';
     }
 
-    localStorage.setItem('sana_drafts', JSON.stringify(drafts));
-    localStorage.setItem('sana_data', JSON.stringify(students));
+    localStorage.setItem(STORAGE_KEYS.DRAFTS, JSON.stringify(drafts));
+    localStorage.setItem(STORAGE_KEYS.DATA, JSON.stringify(students));
 
     updateDraftSelectUI();
     render();
@@ -127,9 +125,9 @@ function createNewDraftPrompt() {
         halaNumEl.value = '';
     }
 
-    localStorage.setItem('sana_drafts', JSON.stringify(drafts));
-    localStorage.setItem('sana_active_draft_id', activeDraftId);
-    localStorage.setItem('sana_data', JSON.stringify(students));
+    localStorage.setItem(STORAGE_KEYS.DRAFTS, JSON.stringify(drafts));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_DRAFT, activeDraftId);
+    localStorage.setItem(STORAGE_KEYS.DATA, JSON.stringify(students));
 
     updateDraftSelectUI();
     render();
@@ -144,7 +142,7 @@ function renameCurrentDraftPrompt() {
     if (!newName || !newName.trim() || newName.trim() === current.name) return;
 
     current.name = newName.trim();
-    localStorage.setItem('sana_drafts', JSON.stringify(drafts));
+    localStorage.setItem(STORAGE_KEYS.DRAFTS, JSON.stringify(drafts));
     updateDraftSelectUI();
     showToast(`تم تغيير الاسم إلى: ${current.name}`);
 }
@@ -173,9 +171,9 @@ function deleteCurrentDraftConfirm() {
         halaNumEl.value = drafts[0].halaNum || '';
     }
 
-    localStorage.setItem('sana_drafts', JSON.stringify(drafts));
-    localStorage.setItem('sana_active_draft_id', activeDraftId);
-    localStorage.setItem('sana_data', JSON.stringify(students));
+    localStorage.setItem(STORAGE_KEYS.DRAFTS, JSON.stringify(drafts));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_DRAFT, activeDraftId);
+    localStorage.setItem(STORAGE_KEYS.DATA, JSON.stringify(students));
 
     updateDraftSelectUI();
     render();

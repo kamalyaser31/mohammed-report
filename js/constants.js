@@ -11,6 +11,17 @@ const AWARDS = [
     "محاولة جيدة، تحتاج إلى مزيد من التركيز 🎯", "ننتظر جدية أكبر ⚠️"
 ];
 
+// مفاتيح التخزين المحلي المعزولة لتفادي أي تداخل مع التطبيقات الأخرى
+const STORAGE_KEYS = {
+    DRAFTS: 'mohammed_drafts',
+    SETTINGS: 'mohammed_settings',
+    SETTINGS_OPEN: 'mohammed_settings_open',
+    THEME: 'mohammed_theme',
+    FIELD_VIS: 'mohammed_field_vis',
+    ACTIVE_DRAFT: 'mohammed_active_draft_id',
+    DATA: 'mohammed_data'
+};
+
 // مفاتيح حقول رؤية بطاقات الطلاب — مصدر حقيقة واحد يُستخدَم في كل المواضع
 const VISIBILITY_FIELD_KEYS = ['تسميع', 'مراجعة_قديمة', 'ماضي_قريب', 'حفظ', 'مراجعة', 'ماضي_قريب_جديد', 'ملاحظات', 'وسام'];
 

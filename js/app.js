@@ -2,7 +2,7 @@
  * نقطة انطلاق وربط أحداث تطبيق تقرير حصة القرآن الكريم (App Bootstrap & Event Binding)
  */
 document.addEventListener("DOMContentLoaded", () => {
-    const savedTheme = localStorage.getItem("sana_theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     setTheme(savedTheme);
     loadSettings();
     initDrafts();

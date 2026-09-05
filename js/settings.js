@@ -3,7 +3,7 @@
  */
 function setTheme(t) {
     document.documentElement.setAttribute("data-theme", t);
-    localStorage.setItem("sana_theme", t);
+    localStorage.setItem(STORAGE_KEYS.THEME, t);
     const btn = document.getElementById("themeToggleBtn");
     if (btn) btn.textContent = t === "dark" ? "الوضع الفاتح" : "الوضع الليلي";
 }
@@ -39,7 +39,7 @@ function updateSettingsSummary() {
 }
 
 function loadSettings() {
-    const s = JSON.parse(localStorage.getItem('sana_settings') || '{}');
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEYS.SETTINGS) || '{}');
     document.getElementById('reportDate').value = s.date || new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const activeDraft = typeof getActiveDraft === 'function' ? getActiveDraft() : null;
     document.getElementById('durationHours').value = s.durationHours !== undefined ? s.durationHours : '1';
@@ -48,11 +48,11 @@ function loadSettings() {
 
     const details = document.getElementById('settingsDetails');
     if (details) {
-        if (localStorage.getItem('sana_settings_open') === '0') {
+        if (localStorage.getItem(STORAGE_KEYS.SETTINGS_OPEN) === '0') {
             details.removeAttribute('open');
         }
         details.addEventListener('toggle', () => {
-            localStorage.setItem('sana_settings_open', details.open ? '1' : '0');
+            localStorage.setItem(STORAGE_KEYS.SETTINGS_OPEN, details.open ? '1' : '0');
         });
     }
     updateSettingsSummary();
@@ -60,9 +60,9 @@ function loadSettings() {
 
 function saveState() {
     syncCurrentDraft();
-    localStorage.setItem('sana_drafts', JSON.stringify(drafts));
-    localStorage.setItem('sana_data', JSON.stringify(students));
-    localStorage.setItem('sana_settings', JSON.stringify({
+    localStorage.setItem(STORAGE_KEYS.DRAFTS, JSON.stringify(drafts));
+    localStorage.setItem(STORAGE_KEYS.DATA, JSON.stringify(students));
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
         date: document.getElementById('reportDate')?.value || '',
         teacherName: TEACHER_NAME,
         durationHours: document.getElementById('durationHours')?.value || '',
@@ -95,7 +95,7 @@ function updateFieldVisibility() {
         if (el) fieldVisibility[k] = el.checked;
     });
 
-    localStorage.setItem('sana_field_vis', JSON.stringify(fieldVisibility));
+    localStorage.setItem(STORAGE_KEYS.FIELD_VIS, JSON.stringify(fieldVisibility));
     render();
     showToast('تم حفظ تفضيلات الحقول ✓');
 }
@@ -107,7 +107,7 @@ function resetFieldVisibility() {
         if (el) el.checked = true;
     });
 
-    localStorage.setItem('sana_field_vis', JSON.stringify(fieldVisibility));
+    localStorage.setItem(STORAGE_KEYS.FIELD_VIS, JSON.stringify(fieldVisibility));
     render();
     showToast('تم استعادة كافة الحقول ✓');
 }

@@ -18,7 +18,7 @@ const DEFAULT_FIELD_VISIBILITY = {
 };
 
 // تهيئة fieldVisibility مع تصفية مفاتيح localStorage لمنع تلوث الإصدارات السابقة
-const _storedVisibility = JSON.parse(localStorage.getItem('sana_field_vis') || '{}');
+const _storedVisibility = JSON.parse(localStorage.getItem(STORAGE_KEYS.FIELD_VIS) || '{}');
 let fieldVisibility = Object.fromEntries(
     Object.keys(DEFAULT_FIELD_VISIBILITY).map(k => [k, k in _storedVisibility ? _storedVisibility[k] : DEFAULT_FIELD_VISIBILITY[k]])
 );
