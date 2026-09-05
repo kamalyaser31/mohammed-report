@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير حصة القرآن الكريم</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+    <link rel="apple-touch-icon" href="assets/icon.svg">
+    <meta name="theme-color" content="#006655">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تقرير القرآن">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/html2pdf.bundle.min.js"></script>
+    <script src="js/constants.js" defer></script>
+    <script src="js/state.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/drafts.js" defer></script>
+    <script src="js/settings.js" defer></script>
+    <script src="js/render.js" defer></script>
+    <script src="js/students.js" defer></script>
+    <script src="js/report.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+
+<main class="container">
+    <header class="app-header">
+        <div>
+            <h1>تقرير حصة القرآن الكريم</h1>
+            <p class="app-subtitle">توثيق ومتابعة تقارير الحلقات</p>
+        </div>
+        <div class="header-controls">
+            <button type="button" onclick="openSettingsModal()" class="btn btn-outline btn-sm" aria-label="تخصيص الحقول">⚙️ تخصيص الحقول</button>
+            <button type="button" id="themeToggleBtn" onclick="toggleTheme()" class="btn btn-outline btn-sm" aria-label="الوضع الليلي">الوضع الليلي</button>
+            <button type="button" onclick="clearAll()" class="btn btn-danger btn-sm" aria-label="مسح التقرير">مسح التقرير</button>
+        </div>
+    </header>
+
+    <!-- بيانات الحلقة -->
+    <details class="settings-details" id="settingsDetails" open aria-label="بيانات الحلقة">
+        <summary class="settings-summary-bar">
+            <div class="summary-content">
+                <span class="summary-icon">⚙</span>
+                <strong>بيانات الحلقة</strong>
+                <span class="summary-badge" id="settingsBadge">محمد نبيل • 1 ساعة</span>
+            </div>
+        </summary>
+        <div class="settings-details-body">
+            <div class="card-fields-grid">
+                <div class="form-group">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <label for="reportDate">التاريخ:</label>
+                        <div style="display:flex;gap:4px;">
+                            <button type="button" onclick="setDatePreset('today')" class="btn btn-outline btn-xs" aria-label="اليوم">اليوم</button>
+                            <button type="button" onclick="setDatePreset('yesterday')" class="btn btn-outline btn-xs" aria-label="الأمس">الأمس</button>
+                        </div>
+                    </div>
+                    <input type="text" id="reportDate" aria-label="التاريخ">
+                </div>
+                <div class="form-group">
+                    <label for="durationHours">الساعات:</label>
+                    <input type="number" id="durationHours" min="0" max="24" value="1" placeholder="ساعة" aria-label="الساعات">
+                </div>
+                <div class="form-group">
+                    <label for="durationMinutes">الدقائق:</label>
+                    <input type="number" id="durationMinutes" min="0" max="59" step="5" value="0" placeholder="دقيقة" aria-label="الدقائق">
+                </div>
+                <div class="form-group">
+                    <label for="halaNum">رقم الحلقة:</label>
+                    <input type="text" id="halaNum" placeholder="اختياري" aria-label="رقم الحلقة">
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- اختيار المسودة الحالية -->
+    <div class="draft-selector-row">
+        <label for="draftSelect" class="draft-selector-label">المسودة:</label>
+        <select id="draftSelect" class="draft-select-control" onchange="onDraftChange(this.value)" aria-label="المسودة الحالية"></select>
+    </div>
+
+    <section class="stats-bar" aria-label="إحصائيات التقرير">
+        <div>
+            <span>إجمالي الطلاب: <strong id="totalCount">0</strong></span>
+            <span style="margin-right:8px;font-size:0.85rem;opacity:0.9;">(ذكور: <strong id="maleCount">0</strong> | إناث: <strong id="femaleCount">0</strong>)</span>
+        </div>
+        <button type="button" id="expandAllBtn" onclick="toggleAll()" class="btn btn-outline btn-sm" style="color:inherit;border-color:currentColor;" aria-label="طي الكل">طي الكل</button>
+    </section>
+
+    <section id="studentsList" class="students-container" aria-label="بطاقات الطلاب"></section>
+</main>
+
+<footer class="action-bar-container" aria-label="شريط الإجراءات">
+    <div class="action-bar-inner">
+        <button type="button" onclick="addStudent()" class="btn btn-success" aria-label="إضافة طالب">+ إضافة طالب</button>
+        <button type="button" onclick="copyAll(event)" class="btn btn-primary" aria-label="نسخ التقرير">نسخ التقرير</button>
+        <button type="button" onclick="exportPDF()" class="btn btn-outline" style="border-color:var(--primary);color:var(--primary);" aria-label="تصدير PDF">تصدير PDF</button>
+    </div>
+</footer>
+
+
+<!-- نافذة إعدادات المعلم وتخصيص الحقول -->
+<div id="settingsModal" class="modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-box">
+        <header class="modal-header">
+            <h3 id="settingsModalTitle">⚙️ تخصيص الحقول</h3>
+            <button type="button" class="modal-close-btn" onclick="closeSettingsModal()" aria-label="إغلاق">✕</button>
+        </header>
+        <div class="modal-body">
+            <p class="modal-desc">
+                اختر الحقول المطلوب إظهارها في بطاقات الطلاب:
+            </p>
+            <div class="settings-checklist">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_تسميع" onchange="updateFieldVisibility()">
+                    <span>التسميع</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_مراجعة_قديمة" onchange="updateFieldVisibility()">
+                    <span>الماضي</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_ماضي_قريب" onchange="updateFieldVisibility()">
+                    <span>الماضي القريب</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_حفظ" onchange="updateFieldVisibility()">
+                    <span>الحفظ الجديد</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_مراجعة" onchange="updateFieldVisibility()">
+                    <span>الماضي المطلوب</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_ماضي_قريب_جديد" onchange="updateFieldVisibility()">
+                    <span>الماضي القريب المطلوب</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_ملاحظات" onchange="updateFieldVisibility()">
+                    <span>ملاحظات المعلم</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vis_وسام" onchange="updateFieldVisibility()">
+                    <span>الوسام</span>
+                </label>
+            </div>
+
+            <hr class="modal-divider">
+            
+            <div class="settings-section-title">📁 إدارة المسودات:</div>
+            <div class="draft-modal-actions">
+                <button type="button" onclick="createNewDraftPrompt()" class="btn btn-outline btn-sm" aria-label="مسودة جديدة">+ مسودة جديدة</button>
+                <button type="button" onclick="renameCurrentDraftPrompt()" class="btn btn-outline btn-sm" aria-label="إعادة تسمية">✏️ إعادة تسمية</button>
+                <button type="button" onclick="deleteCurrentDraftConfirm()" class="btn btn-outline btn-sm btn-danger-outline" aria-label="حذف المسودة">🗑️ حذف المسودة</button>
+            </div>
+        </div>
+        <footer class="modal-footer">
+            <button type="button" onclick="resetFieldVisibility()" class="btn btn-outline btn-sm" style="margin-left:auto;">إظهار الكل</button>
+            <button type="button" onclick="closeSettingsModal()" class="btn btn-success btn-sm">تم ✓</button>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>
